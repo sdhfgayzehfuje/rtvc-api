@@ -23,7 +23,7 @@ import os
 
 @app.route('/')
 def index():
-    html_path = os.path.join(os.path.expanduser('~'), 'Desktop', 'RTVC_Plateforme_MySQL.html')
+    html_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'RTVC_Plateforme_MySQL.html')
     with open(html_path, 'r', encoding='utf-8') as f:
         return f.read()
 
