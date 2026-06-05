@@ -30,10 +30,11 @@ def index():
 
 # ── CONFIGURATION ────────────────────────────────────────────────────
 DB_CONFIG = {
-    'host':     '127.0.0.1',
+    'host':     'acela.proxy.rlwy.net',
+    'port':      55033,
     'user':     'root',
-    'password': 'JumaiChou0906',
-    'database': 'rtvc',
+    'password': 'BPyvWyvbKIjStHzKnnNzbjqtsUNpLrjn',
+    'database': 'railway',
     'charset':  'utf8mb4',
     'use_unicode': True,
     'collation': 'utf8mb4_unicode_ci'
