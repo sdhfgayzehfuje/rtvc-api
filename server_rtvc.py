@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 import mysql.connector
 from mysql.connector import Error
 import urllib.request
@@ -970,7 +970,9 @@ document.getElementById("chat-input").addEventListener("keydown", e => { if (e.k
 </script>
 </body>
 </html>'''
-    return html, 200, {'Content-Type': 'text/html; charset=utf-8'}
+    resp = make_response(html)
+    resp.headers['Content-Type'] = 'text/html; charset=utf-8'
+    return resp
 
 
 if __name__ == '__main__':
