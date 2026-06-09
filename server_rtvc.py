@@ -730,6 +730,248 @@ def chat():
         return jsonify({'error': f'Erreur serveur Chatbot: {str(e)}'}), 500
 
 
+@app.route('/docs')
+def docs():
+    return '''<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RTVC API — Interface</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Inter",sans-serif;background:#F1F5F9;color:#1A202C;min-height:100vh;}
+.navbar{background:#1A3A6B;padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+.navbar-brand{color:#fff;font-size:1.2rem;font-weight:700;letter-spacing:-.01em;}
+.navbar-brand span{color:#C9A227;}
+.navbar-sub{color:rgba(255,255,255,.5);font-size:.82rem;}
+.nav-tabs{display:flex;gap:4px;}
+.nav-tab{padding:6px 16px;border-radius:7px;border:none;background:transparent;color:rgba(255,255,255,.6);cursor:pointer;font-family:"Inter",sans-serif;font-size:.84rem;transition:all .15s;}
+.nav-tab:hover{background:rgba(255,255,255,.1);color:#fff;}
+.nav-tab.active{background:rgba(255,255,255,.15);color:#fff;font-weight:600;}
+.main{max-width:1000px;margin:0 auto;padding:32px 24px;}
+.panel{display:none;}
+.panel.active{display:block;}
+.card{background:#fff;border-radius:14px;padding:24px;box-shadow:0 1px 4px rgba(0,0,0,.07);margin-bottom:20px;}
+.card h2{font-size:1.05rem;font-weight:600;color:#1A3A6B;margin-bottom:16px;}
+.input-row{display:flex;gap:10px;margin-bottom:12px;}
+.input-row input{flex:1;border:1.5px solid #E2E8F0;border-radius:9px;padding:11px 15px;font-family:"Inter",sans-serif;font-size:.9rem;outline:none;transition:border-color .15s;}
+.input-row input:focus{border-color:#1A3A6B;}
+.btn{background:#1A3A6B;color:#fff;border:none;border-radius:9px;padding:11px 22px;font-family:"Inter",sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:background .15s;white-space:nowrap;}
+.btn:hover{background:#2B5499;}
+.btn.secondary{background:#F1F5F9;color:#1A3A6B;border:1.5px solid #E2E8F0;}
+.btn.secondary:hover{background:#E2E8F0;}
+.result-box{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:16px;min-height:80px;font-size:.85rem;color:#374151;line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;}
+.result-box.loading{color:#94A3B8;font-style:italic;}
+.result-box.error{color:#DC2626;background:#FEF2F2;}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+.stat-card{background:#fff;border-radius:12px;padding:20px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.07);}
+.stat-num{font-size:1.8rem;font-weight:700;color:#1A3A6B;line-height:1;}
+.stat-lbl{font-size:.75rem;color:#94A3B8;margin-top:5px;text-transform:uppercase;letter-spacing:.06em;}
+.tag{display:inline-block;padding:3px 10px;border-radius:99px;font-size:.72rem;font-weight:600;text-transform:uppercase;}
+.tag.sc{background:rgba(255,85,0,.1);color:#FF5500;}
+.tag.vimeo{background:rgba(109,40,217,.1);color:#6D28D9;}
+.tag.drive{background:rgba(5,150,105,.1);color:#059669;}
+.result-item{background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:14px;margin-bottom:10px;}
+.result-item-title{font-size:.92rem;font-weight:600;color:#1A3A6B;margin-bottom:6px;}
+.result-item-text{font-size:.82rem;color:#555;line-height:1.65;}
+.result-item-meta{font-size:.72rem;color:#94A3B8;margin-top:6px;font-family:monospace;}
+.chat-msgs{max-height:380px;overflow-y:auto;margin-bottom:14px;display:flex;flex-direction:column;gap:10px;}
+.bbl{max-width:80%;padding:11px 15px;border-radius:12px;font-size:.87rem;line-height:1.6;}
+.bbl.u{background:#1A3A6B;color:#fff;align-self:flex-end;border-radius:12px 12px 2px 12px;}
+.bbl.b{background:#F1F5F9;align-self:flex-start;border-radius:12px 12px 12px 2px;color:#1A202C;}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
+.chip{padding:5px 14px;border-radius:99px;border:1.5px solid #E2E8F0;background:transparent;font-family:"Inter",sans-serif;font-size:.76rem;cursor:pointer;transition:all .15s;color:#555;}
+.chip:hover,.chip.on{border-color:#1A3A6B;color:#1A3A6B;background:#EBF0F8;}
+footer{text-align:center;padding:24px;font-size:.78rem;color:#94A3B8;}
+</style>
+</head>
+<body>
+<div class="navbar">
+  <div>
+    <div class="navbar-brand">RT<span>VC</span> API</div>
+    <div class="navbar-sub">Interface de test — v1.0</div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPanel(this,'stats')">📊 Statistiques</button>
+    <button class="nav-tab" onclick="showPanel(this,'search')">🔍 Recherche</button>
+    <button class="nav-tab" onclick="showPanel(this,'chat')">💬 Chatbot IA</button>
+    <button class="nav-tab" onclick="showPanel(this,'docs')">📖 Documentation</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- STATS -->
+  <div class="panel active" id="panel-stats">
+    <div class="stat-grid" id="stat-grid">
+      <div class="stat-card"><div class="stat-num" id="s-total">—</div><div class="stat-lbl">Médias indexés</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-text">—</div><div class="stat-lbl">Transcriptions</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-segs">—</div><div class="stat-lbl">Segments horodatés</div></div>
+    </div>
+    <div class="card">
+      <h2>Répartition par source</h2>
+      <div id="sources-list">Chargement...</div>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="panel" id="panel-search">
+    <div class="card">
+      <h2>Recherche dans les transcriptions</h2>
+      <div class="input-row">
+        <input id="sq" type="text" placeholder="Ex : prière, foi, jubilé...">
+        <button class="btn" onclick="doSearch()">Rechercher</button>
+      </div>
+      <div class="chips" id="src-chips">
+        <button class="chip on" onclick="setSrc(this,'all')">Toutes sources</button>
+        <button class="chip" onclick="setSrc(this,'SoundCloud')">SoundCloud</button>
+        <button class="chip" onclick="setSrc(this,'Vimeo')">Vimeo</button>
+        <button class="chip" onclick="setSrc(this,'Google Drive')">Drive</button>
+      </div>
+      <div id="search-results"></div>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="panel" id="panel-chat">
+    <div class="card">
+      <h2>Assistant IA — Basé sur les transcriptions RTVC</h2>
+      <div class="chat-msgs" id="chat-msgs">
+        <div class="bbl b">Bonjour ! Posez-moi une question sur les enseignements RTVC.</div>
+      </div>
+      <div class="input-row">
+        <input id="chat-input" type="text" placeholder="Ex : C'est quoi la foi ?">
+        <button class="btn" onclick="sendChat()">Envoyer</button>
+      </div>
+      <div class="chips">
+        <button class="chip" onclick="askQ('C\'est quoi la foi ?')">C'est quoi la foi ?</button>
+        <button class="chip" onclick="askQ('Comment prier ?')">Comment prier ?</button>
+        <button class="chip" onclick="askQ('C\'est quoi le jubilé ?')">Le jubilé ?</button>
+        <button class="chip" onclick="askQ('Comment grandir spirituellement ?')">Grandir spirituellement ?</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOCS -->
+  <div class="panel" id="panel-docs">
+    <div class="card">
+      <h2>Endpoints disponibles</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:.88rem;">
+        <tr style="background:#F8FAFC;">
+          <th style="padding:10px;text-align:left;border:1px solid #E2E8F0;">Méthode</th>
+          <th style="padding:10px;text-align:left;border:1px solid #E2E8F0;">Route</th>
+          <th style="padding:10px;text-align:left;border:1px solid #E2E8F0;">Description</th>
+          <th style="padding:10px;text-align:left;border:1px solid #E2E8F0;">Paramètres</th>
+        </tr>
+        <tr><td style="padding:10px;border:1px solid #E2E8F0;"><span style="background:#DCFCE7;color:#166534;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:700;">GET</span></td><td style="padding:10px;border:1px solid #E2E8F0;font-family:monospace;">/api/stats</td><td style="padding:10px;border:1px solid #E2E8F0;">Statistiques générales</td><td style="padding:10px;border:1px solid #E2E8F0;color:#94A3B8;">—</td></tr>
+        <tr><td style="padding:10px;border:1px solid #E2E8F0;"><span style="background:#DCFCE7;color:#166534;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:700;">GET</span></td><td style="padding:10px;border:1px solid #E2E8F0;font-family:monospace;">/api/search/segments</td><td style="padding:10px;border:1px solid #E2E8F0;">Recherche dans les transcriptions</td><td style="padding:10px;border:1px solid #E2E8F0;font-family:monospace;font-size:.78rem;">q, source</td></tr>
+        <tr><td style="padding:10px;border:1px solid #E2E8F0;"><span style="background:#DCFCE7;color:#166534;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:700;">GET</span></td><td style="padding:10px;border:1px solid #E2E8F0;font-family:monospace;">/api/search/titles</td><td style="padding:10px;border:1px solid #E2E8F0;">Recherche par titre</td><td style="padding:10px;border:1px solid #E2E8F0;font-family:monospace;font-size:.78rem;">q, source, limit</td></tr>
+        <tr><td style="padding:10px;border:1px solid #E2E8F0;"><span style="background:#DCFCE7;color:#166534;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:700;">GET</span></td><td style="padding:10px;border:1px solid #E2E8F0;font-family:monospace;">/api/search/theme</td><td style="padding:10px;border:1px solid #E2E8F0;">Recherche par thème</td><td style="padding:10px;border:1px solid #E2E8F0;font-family:monospace;font-size:.78rem;">kw (multiple)</td></tr>
+        <tr><td style="padding:10px;border:1px solid #E2E8F0;"><span style="background:#DCFCE7;color:#166534;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:700;">GET</span></td><td style="padding:10px;border:1px solid #E2E8F0;font-family:monospace;">/api/chrono</td><td style="padding:10px;border:1px solid #E2E8F0;">Chronologie des enregistrements</td><td style="padding:10px;border:1px solid #E2E8F0;font-family:monospace;font-size:.78rem;">year</td></tr>
+        <tr><td style="padding:10px;border:1px solid #E2E8F0;"><span style="background:#DCFCE7;color:#166534;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:700;">GET</span></td><td style="padding:10px;border:1px solid #E2E8F0;font-family:monospace;">/api/compare</td><td style="padding:10px;border:1px solid #E2E8F0;">Comparer deux sujets</td><td style="padding:10px;border:1px solid #E2E8F0;font-family:monospace;font-size:.78rem;">q1, q2, mode</td></tr>
+        <tr><td style="padding:10px;border:1px solid #E2E8F0;"><span style="background:#DBEAFE;color:#1E40AF;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:700;">POST</span></td><td style="padding:10px;border:1px solid #E2E8F0;font-family:monospace;">/api/chat</td><td style="padding:10px;border:1px solid #E2E8F0;">Chatbot IA</td><td style="padding:10px;border:1px solid #E2E8F0;font-family:monospace;font-size:.78rem;">question, history</td></tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+<footer>RTVC API v1.0 — Radio Télévision Voix de la Croix</footer>
+
+<script>
+var BASE = window.location.origin;
+var srcF = "all";
+var chatHistory = [];
+
+function showPanel(btn, id) {
+  document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".nav-tab").forEach(b => b.classList.remove("active"));
+  document.getElementById("panel-" + id).classList.add("active");
+  btn.classList.add("active");
+}
+
+// Stats
+fetch(BASE + "/api/stats").then(r => r.json()).then(d => {
+  document.getElementById("s-total").textContent = d.total.toLocaleString("fr-FR");
+  document.getElementById("s-text").textContent = d.with_text.toLocaleString("fr-FR");
+  document.getElementById("s-segs").textContent = d.total_segments.toLocaleString("fr-FR");
+  var cls = {SoundCloud:"sc", Vimeo:"vimeo", "Google Drive":"drive", Inconnu:"drive"};
+  document.getElementById("sources-list").innerHTML = d.sources.map(s =>
+    `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <span class="tag ${cls[s.source]||""}">${s.source}</span>
+      <div style="flex:1;height:6px;background:#F1F5F9;border-radius:99px;overflow:hidden;">
+        <div style="height:100%;width:${Math.round(s.n/d.total*100)}%;background:#1A3A6B;border-radius:99px;"></div>
+      </div>
+      <span style="font-size:.8rem;color:#94A3B8;font-family:monospace;">${s.n.toLocaleString("fr-FR")}</span>
+    </div>`
+  ).join("");
+}).catch(() => {});
+
+function setSrc(btn, val) {
+  document.querySelectorAll("#src-chips .chip").forEach(b => b.classList.remove("on"));
+  btn.classList.add("on"); srcF = val;
+}
+
+function doSearch() {
+  var q = document.getElementById("sq").value.trim();
+  if (!q) return;
+  var res = document.getElementById("search-results");
+  res.innerHTML = "<div style='color:#94A3B8;font-style:italic;padding:10px;'>Recherche en cours...</div>";
+  fetch(BASE + "/api/search/segments?q=" + encodeURIComponent(q) + "&source=" + srcF)
+    .then(r => r.json()).then(data => {
+      if (!data.length) { res.innerHTML = "<div style='color:#94A3B8;padding:10px;'>Aucun résultat.</div>"; return; }
+      res.innerHTML = data.slice(0,8).map(r =>
+        `<div class="result-item">
+          <div class="result-item-title">${r.title||"(sans titre)"}</div>
+          ${(r.segments||[]).slice(0,2).map(s =>
+            `<div class="result-item-text">"${s.t}"</div>
+             <div class="result-item-meta">▶ ${fmtTime(s.s)}</div>`
+          ).join("")}
+        </div>`
+      ).join("");
+    }).catch(() => { res.innerHTML = "<div style='color:#DC2626;'>Erreur serveur.</div>"; });
+}
+
+document.getElementById("sq").addEventListener("keydown", e => { if (e.key === "Enter") doSearch(); });
+
+function fmtTime(s) {
+  s = Math.round(s||0);
+  var h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sc = s%60;
+  if (h > 0) return h+"h"+String(m).padStart(2,"0")+"min";
+  if (m > 0) return m+"min"+String(sc).padStart(2,"0")+"s";
+  return sc+"s";
+}
+
+function askQ(q) { document.getElementById("chat-input").value = q; sendChat(); }
+
+function sendChat() {
+  var inp = document.getElementById("chat-input"), q = inp.value.trim();
+  if (!q) return;
+  var msgs = document.getElementById("chat-msgs");
+  msgs.innerHTML += `<div class="bbl u">${q}</div><div class="bbl b" id="typing" style="color:#94A3B8;font-style:italic;">Recherche en cours...</div>`;
+  inp.value = ""; msgs.scrollTop = msgs.scrollHeight;
+  chatHistory.push({role:"user", content:q});
+  fetch(BASE + "/api/chat", {method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({question:q, history:chatHistory})})
+    .then(r => r.json()).then(data => {
+      document.getElementById("typing")?.remove();
+      var answer = data.answer || data.error || "Erreur";
+      msgs.innerHTML += `<div class="bbl b">${answer.replace(/\n/g,"<br>")}</div>`;
+      msgs.scrollTop = msgs.scrollHeight;
+      chatHistory.push({role:"assistant", content:answer});
+    }).catch(() => {
+      document.getElementById("typing")?.remove();
+      msgs.innerHTML += `<div class="bbl b" style="color:#DC2626;">Erreur serveur.</div>`;
+    });
+}
+
+document.getElementById("chat-input").addEventListener("keydown", e => { if (e.key === "Enter") sendChat(); });
+</script>
+</body>
+</html>'''
+
+
 if __name__ == '__main__':
     print("Serveur RTVC demarre sur http://localhost:5000")
     print("Appuyez sur Ctrl+C pour arreter")
