@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request, make_response
+from flasgger import Swagger
 import mysql.connector
 from mysql.connector import Error
 import urllib.request
@@ -165,6 +166,27 @@ def get_conn():
 # Stats generales
 @app.route('/api/stats')
 def stats():
+    """
+    Statistiques générales du catalogue RTVC
+    ---
+    tags:
+      - Catalogue
+    responses:
+      200:
+        description: Statistiques du catalogue
+        schema:
+          type: object
+          properties:
+            total:
+              type: integer
+              description: Nombre total de médias
+            with_text:
+              type: integer
+              description: Nombre de médias avec transcription
+            total_segments:
+              type: integer
+              description: Nombre de segments horodatés
+    """ 
     try:
         conn   = get_conn()
         cursor = conn.cursor(dictionary=True)
@@ -231,6 +253,26 @@ def search_titles():
 # Recherche dans les segments (timestamps)
 @app.route('/api/search/segments')
 def search_segments():
+    """
+    Recherche dans les transcriptions avec timestamps
+    ---
+    tags:
+      - Recherche
+    parameters:
+      - name: q
+        in: query
+        type: string
+        required: true
+        description: Mot-clé à rechercher
+      - name: source
+        in: query
+        type: string
+        required: false
+        description: "Filtre par source : SoundCloud, Vimeo, Google Drive, all"
+    responses:
+      200:
+        description: Liste des enregistrements avec passages correspondants
+    """ 
     q      = request.args.get('q', '').strip()
     source = request.args.get('source', '')
     limit  = int(request.args.get('limit', 200))
@@ -381,6 +423,21 @@ def search_theme():
 # Chronologie
 @app.route('/api/chrono')
 def chrono():
+    """
+    Chronologie des enregistrements classés par année
+    ---
+    tags:
+      - Catalogue
+    parameters:
+      - name: year
+        in: query
+        type: integer
+        required: false
+        description: Filtrer par année (ex: 2024)
+    responses:
+      200:
+        description: Liste des enregistrements avec leur année
+    """ 
     year = request.args.get('year', '')
     try:
         conn   = get_conn()
@@ -463,6 +520,35 @@ def chrono():
 # ── CHATBOT ──────────────────────────────────────────────────────────
 @app.route('/api/chat', methods=['POST'])
 def chat():
+    """
+    Chatbot IA basé sur les transcriptions RTVC
+    ---
+    tags:
+      - Chatbot IA
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            question:
+              type: string
+              description: Question en langage naturel
+            history:
+              type: array
+              description: Historique de la conversation
+    responses:
+      200:
+        description: Réponse de l'IA avec références
+        schema:
+          type: object
+          properties:
+            answer:
+              type: string
+            references:
+              type: array
+    """ 
     data = request.get_json()
     question = (data.get('question') or '').strip()
     history  = data.get('history') or []
